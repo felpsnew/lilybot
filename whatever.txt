@@ -1,0 +1,275 @@
+	print('\r{}Taxa:',taxa_atual, 
+			'| Up:', 
+			'| Low:', 
+			'| Time:', round(time() - inicio, 2), 'seg',
+			'| TVela:', datetime.fromtimestamp( int(velas[-1]['from']) ).strftime('%H:%M'),
+			'| EMA:', calculo_ema,
+			'| ZONA',zona_up,' ',zona_low,
+			'| Tendência:', tendencia,
+			'| ALERT ', out_low,'  ', out_low,
+			end='',
+			)
+
+
+
+
+
+
+            
+	if taxa_atual >= up or taxa_atual <= low:
+		#print ('ANALISANDO DOJI')
+		#if dir == 'put' or dir == 'call':
+		#if tendencia == 'put' or tendencia == 'call':
+		print('Realizando entrada na taxa', taxa_atual)
+			
+		status, id = API.buy_digital_spot(par, 50, 'put' if taxa_atual >= up else 'call', 1)
+		
+		if status:
+			print('Entrada realizada com sucesso, aguardando resultado..')
+			
+			while True:
+				status, valor = API.check_win_digital_v2(id)
+				
+				if status:
+					
+					if valor < 0 : valor = -2
+					
+					print('Resultado da operação: ', end='')
+					
+					if valor > 0:
+						print('WIN! +' + str(valor))
+					else:
+						print('LOSS!', valor)
+
+			
+					break
+			print('\n')		
+
+					
+
+
+	
+	if calculo_ema >= up or calculo_ema <= low:
+		##print ('    DOJI')
+		#if dir == 'put' or dir == 'call':
+		#if tendencia == 'put' or tendencia == 'call':
+		print('Realizando entrada na taxa', taxa_atual)
+		
+		status, id = API.buy_digital_spot(par, 200, 'put' if taxa_atual >= up else 'call', 1)
+		
+		if status:
+			print('Entrada realizada com sucesso, aguardando resultado..')
+			
+			while True:
+				status, valor = API.check_win_digital_v2(id)
+				
+				if status:
+					
+					if valor < 0 : valor = -2
+					
+					print('Resultado da operação: ', end='')
+					
+					if valor > 0:
+						print('WIN! +' + str(valor))
+					else:
+						print('LOSS!', valor)
+
+					break
+			print('\n')
+
+
+
+
+	
+	
+	for dados in indicadores:
+		if dados ['candle_size'] == 60:
+			if dados ['name'] == 'Awesome Oscillator':
+				tendencia1 = dados['action']
+	for dados in indicadores:
+		if dados ['candle_size'] == 60:
+			if dados ['name'] == 'Exponential Moving Average (5)':
+				tendencia2 = dados['action']
+	for dados in indicadores:
+		if dados ['candle_size'] == 60:
+			if dados ['name'] == 'Simple Moving Average (5)':
+				tendencia3 = dados['action']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from iqoptionapi.stable_api import IQ_Option
+from datetime import datetime
+from time import time, sleep
+import sys
+import numpy as np
+from logg import *
+from talib.abstract import BBANDS, EMA
+import pandas as pd
+from candlestick import candlestick
+from Indicador_tecnico import humor
+from tetx import mhivdd
+status = ()
+id = ()
+
+def entrar(taxa_ou_ema):  #REALIZA A COMPRA OU VENDA DAS MEDIAS BOLLINGER OU EMA 
+	global status
+	global id
+	if taxa_ou_ema >= up or taxa_ou_ema <= low:
+		print('\n MB Realizando entrada na taxa', taxa_ou_ema)
+		
+		status, id = API.buy_digital_spot(par, 2000, 'put' if taxa_ou_ema >= up else 'call', 1)
+
+def pattern_call(res_call,taxa_atual): #REALIZA A COMPRA DOS CONDLES DE TENDENCIA DE ALTA
+	global status
+	global id
+	trabalhando = res_call.to_dict('records')
+	for data in trabalhando:
+		if data['result'] == True:
+			print(datetime.fromtimestamp(int(data['from'])), data['result'])
+			print('\n 	CC Realizando entrada na taxa', taxa_atual)
+			status, id = API.buy_digital_spot(par, 2000,'call', 1)
+	
+
+def pattern_put(res_put,taxa_atual): #REALIZA A COMPRA DOS CANDLES DE TENDENCIA DE QUEDA
+	global status
+	global id
+	trabalhando = res_put.to_dict('records')
+	for data in trabalhando:
+		if data['result'] == True:
+			print(datetime.fromtimestamp(int(data['from'])), data['result'])
+			print('\n   CP Realizando entrada na taxa', taxa_atual)
+			status, id = API.buy_digital_spot(par, 2000,'put', 1)
+
+
+cabeçalho('versão 0.2')
+
+API, par, timeframe, usuario = logg()	#DEF QUE IMPORTA DADOS DO USUARIO	
+tipo_mhi = int(input(' Voce deseja que eu opere a favor da Maioria ou Minoria?\n  Digite 1 para minoria\n  Digite 2 para maioria\n  :: '))
+
+velas_q = 101
+operacao = 200
+
+while True:
+	
+	inicio = time()
+	
+	velas_p = API.get_candles(par, 60, 2, int(time()))#GET CANDLES FOR CANDLES PATTERN
+	candles_df = pd.DataFrame.from_dict(velas_p)
+	candles_df.rename(columns={"max": "high", "min": "low"}, inplace=True)
+
+	#-------------------------------------------------------------------------------------
+	res_dark_cloud_cover = candlestick.dark_cloud_cover(candles_df, target='result')
+	res_bullish_engulfing = candlestick.bullish_engulfing(candles_df, target='result')
+	#---------------------------------------------------------------------------------------
+	velas = API.get_candles(par, 60, velas_q, time())
+
+	dados_f = {
+				'open': np.empty(velas_q),
+				'high': np.empty(velas_q), 
+				'low': np.empty(velas_q),
+				'close': np.empty(velas_q),
+				'volume': np.empty(velas_q)
+	}
+	
+	for x in range(0, velas_q):
+		dados_f['open'][x] = velas[x]['open']
+		dados_f['high'][x] = velas[x]['max']
+		dados_f['low'][x] = velas[x]['min']
+		dados_f['close'][x] = velas[x]['close']
+		dados_f['volume'][x] = velas[x]['volume']
+	
+	up, mid, low = BBANDS(dados_f, timeperiod=30, nbdevup=2.0, nbdevdn=2.0, matype=0)
+	
+	velaant = dados_f['close'][20]
+
+	up = round(up[ len(up)-2 ], 6)
+	low = round(low[ len(low)-2 ], 6)
+	taxa_atual = round(velas[-1]['close'], 6)
+#------------------------------------------------------
+
+	#Calculo EMA TA-Lib
+	calculo_ema = EMA(dados_f, timeperiod=100)
+	calculo_ema = round(calculo_ema[-1],6)
+
+#------------------------------------------------------------------------ CALCULO MALUCO DO FELIPEE
+
+	if (velaant - taxa_atual) > 0.003 or (taxa_atual - velaant) > 0.003:
+		tendencia = 'put' if velaant > taxa_atual else 'call' 
+	else: 
+		tendencia = 'Lateralizado'
+
+	#ind_tec = humor(API,par)
+	mhivdd(API, par, tipo_mhi)
+		
+
+#-------------------------------------------------- REALIZA O CALCULO DA QUANDO A TAXA ATUAL SAI DA BANDA DE BOLLINGER
+
+	#out_low = 0
+	#out_up = 0
+	#if taxa_atual > low:
+	#	out_low = abs(round((low * 100) - (taxa_atual * 100),3))
+	#if taxa_atual < up:
+	#	out_up = abs(round((taxa_atual * 100) - (up * 100),3))
+
+	print('Taxa:', taxa_atual, 
+			'| Time:', round(time() - inicio, 2), 'seg',
+			'| TVela:', datetime.fromtimestamp( int(velas[-1]['from']) ).strftime('%H:%M'),
+	)
+#===================================================================================================================
+
+#ANALISE DE CANDLES MHI
+
+#======================================================================================================================
+	dir = True
+
+	if tendencia == 'Lateralizado':#DETERMINA QUE QUANO O MERCADO TIVE LATERALIZADO N ENTRA
+		dir = False	
+
+#========================================================================================================================
+
+#ENTRADA
+
+#======================================================================================================================
+	if dir:
+		entrar(taxa_atual)
+		entrar(calculo_ema)
+		pattern_put(res_dark_cloud_cover, taxa_atual)
+		pattern_call(res_bullish_engulfing, taxa_atual)
+
+		if status:
+			print('Entrada realizada com sucesso, aguardando resultado..')
+			
+			while True:
+				status, valor = API.check_win_digital_v2(id)
+				
+				if status:
+					
+					if valor < 0 : valor = -2
+					
+					print('Resultado da operação: ', end='')
+					
+					if valor > 0:
+						print('WIN! +' + str(valor))
+					else:
+						print('LOSS!', valor)
+
+					break
+
+			status = ()
+			id = ()
+			sleep(10)					
+			print('\n')
+

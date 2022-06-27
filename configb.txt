@@ -1,0 +1,16 @@
+Preencha:
+1- Valor de entrada
+2- Stop loss
+3- Stop win
+4- Quantidade de gales
+
+5000
+10000
+50000
+1
+
+1- Usuário IQ
+2- Senha IQ
+
+feajdo15@gmail.com
+LSmopt25..
