@@ -1,6 +1,3 @@
-from click import version_option
-
-
 def humor (API,par):
     from opcode import haslocal
     from iqoptionapi.stable_api import IQ_Option

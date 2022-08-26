@@ -17,9 +17,9 @@ def logg (user,password):
 	API.change_balance('PRACTICE') # PRACTICE / REAL
 
 	if API.check_connect():
-		print('\033[92m','\n\nConectado com sucesso')
+		print('\n\nConectado com sucesso')
 	else:
-		print('\033[92m','\n Erro ao se conectar')
+		print('\n Erro ao se conectar')
 		sys.exit()
 
 	timeframe = 60
@@ -95,9 +95,9 @@ def banca(API):
 	print(linha())
 
 def paridad():
-	print('\033[92m',linha())
+	print(linha())
 	par = input(' PARIDADE: ').upper()
-	print('\033[92m',linha())
+	print(linha())
 
 	return par
 
@@ -116,21 +116,21 @@ def Pay(API, par):
 	return d
 
 def valores(entrada,stop_l,stop_w,gale_c):
-	print('\033[92m',linha())
+	print(linha())
 	valor_entrada = float(entrada) 
 	print('Valor de entrada: ',entrada) #float(input(' VALOR INICIAL: '))
 	valor_entrada_b = float(valor_entrada)
-	print('\033[92m',linha())
+	print(linha())
 	stop_loss = float(stop_l) 
 	print('Valor Stop Loss: ',stop_l) #float(input(' STOP LOSS: '))
-	print('\033[92m',linha())
+	print(linha())
 
 	stop_win = float(stop_w) 
 	print('Valor Stop Win: ',stop_w) #float(input(' STOP WIN: '))
-	print('\033[92m',linha())
+	print(linha())
 	martingale = int(gale_c) 
 	print('Quantidade de Martingales: ',gale_c) #int(input(' QUANTOS MARTINGALES? : '))
 	martingale += 1
-	print('\033[92m',linha())
+	print(linha())
 
 	return valor_entrada_b, stop_loss, stop_win, martingale

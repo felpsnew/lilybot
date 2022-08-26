@@ -41,7 +41,7 @@ def bolling (API, par, ema):
     ema2 = round(ema * 0.0002,5)
     emaup = round(ema + ema2,5)
     emalow = round(ema - ema2,5)
-    print('EMA:', ema,'\nEMA UP',emaup,'\nEMA LOW',emalow,'\nUP: ',up,'\nLow: ',low)
+    #print('EMA:', ema,'\nEMA UP',emaup,'\nEMA LOW',emalow,'\nUP: ',up,'\nLow: ',low)
 
     #if taxa_atual > up_b or taxa_atual < low_b:
     #    go = False

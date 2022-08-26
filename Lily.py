@@ -1,6 +1,6 @@
 from ast import Return
 from itertools import count
-from signal import pause
+#from signal import pause
 from iqoptionapi.stable_api import IQ_Option
 from datetime import datetime
 from time import time
@@ -53,7 +53,7 @@ def soma(a = '',b = '',c = '',d = '',e = '',f = ''):
 	return res
 
 
-print('\033[91m','''
+print('''
 
                        ,--,                
                     ,---.'|                
@@ -87,15 +87,15 @@ def perfil():
 
 x = perfil()
 
-print('\033[93m','ID:', x['user_id'])
-print('\033[93m',x['name'])
+print('ID:', x['user_id'])
+print(x['name'])
 banca(API)
 pares = API.get_all_open_time()
-print('\033[93m',' PARIDADES DIGITAL: \n')
+print(' PARIDADES DIGITAL: \n')
 for paridade in pares['digital']:
 	if pares['digital'][paridade]['open'] == True:
 		payout = API.get_digital_payout(paridade)
-		print('\033[93m',' ',paridade+' | PAYOUT: ',payout,'%')
+		print(' ',paridade+' | PAYOUT: ',payout,'%')
 
 par = paridad()
 
@@ -110,7 +110,7 @@ valor_entrada_b, stop_loss, stop_win, martingale = valores(entrada,stop_l,stop_w
 
 payout = Pay(API, par)
 
-print('\033[0m','\n LOADING...' )
+print('\n LOADING...' )
 
 API.start_candles_stream(par, 60, 900)
 
@@ -138,15 +138,14 @@ while True:
 	res_mhi = mhiGale(API, par)
 	res = soma(res_candy_put,res_candy_call,res_mhi)
 
-	os.system('clear') or None #LIMPAR TELA DE COMANDO
+	os.system('cls') #LIMPAR TELA DE COMANDO
 	
 	if lo.count('.') == 3:
 		lo = ['.']
 	else:
 		lo.append('.')
 
-	print('\033[42m'+'\033[1m'+'\033[30m'+
-		'ANALISANDO VELAS\nAguarde',*lo,
+	print('ANALISANDO VELAS\nAguarde',*lo,
 		'\nCALLs: ',res.count('call'),
 		' | PUTs: ',res.count('put'),
 		'\nLucro: ',round(lucro, 2),
@@ -155,8 +154,7 @@ while True:
 		'\nIndicador: ', res_humor,
 		'\nVolume Ultima Vela fechada: ', volume,
 		'\nTaxa Atual: ', taxa_atual,
-		'\nLily Delay:', round(time() - inicio, 2), 'seg'
-		+'\033[0;0m')
+		'\nLily Delay:', round(time() - inicio, 2), 'seg')
 
 	if res.count('call') >= 1 or res.count('put') >= 1:
 		dir = 'call' if res.count('call') >= 1	 else 'put'
@@ -185,7 +183,7 @@ while True:
 						lucro += round(valor, 2)
 						
 						print('Resultado operação: ', end='')
-						print('\033[92m','WIN /' if valor > 0 else '\033[91m','LOSS /' , round(valor, 2) ,'/ Lucro', round(lucro, 2),('/ '+str(i)+ ' GALE' if i > 0 else '' ))
+						print('WIN /' if valor > 0 else 'LOSS /' , round(valor, 2) ,'/ Lucro', round(lucro, 2),('/ '+str(i)+ ' GALE' if i > 0 else '' ))
 						# 1 GAlE = MHi | 2 Gale = inversão | 3 GALE = inversão
 						
 						galee = +1 if valor < 0 else 0
