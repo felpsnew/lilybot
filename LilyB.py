@@ -1,6 +1,6 @@
 from ast import Return
 from itertools import count
-from signal import pause
+#from signal import pause
 from iqoptionapi.stable_api import IQ_Option
 from datetime import datetime
 from time import time
@@ -138,7 +138,7 @@ while True:
 	#res_mhi = mhiGale(API, par)
 	res = soma(res_bollinger,res_humor)
 
-	os.system('clear') or None #LIMPAR TELA DE COMANDO
+	os.system('cls') or None #LIMPAR TELA DE COMANDO
 	
 	if lo.count('.') == 3:
 		lo = ['.']
